@@ -4,7 +4,7 @@ import sys
 # Uses sys module for closing prompt upon exception, and for naming/checking args
 
 
-# Main server function
+# Main server function - accept args passed from main(), create TCP socket and handle errors (i.e. choose a port above 1024) 
 def server_routine(local_host,local_port,remote_host,remote_port,receive_first):
     server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     
@@ -13,7 +13,7 @@ def server_routine(local_host,local_port,remote_host,remote_port,receive_first):
     except:
         print "Error: Chosen port %s:%d is busy, or you lack administrative privileges." % (local_host, local_port)
         sys.exit(0)
-    print "** Listening on %s:%d" % (local_host,local_port)
+    print "*** Listening on %s:%d" % (local_host,local_port)
     
     server.listen(5)
     while True:
@@ -24,7 +24,7 @@ def server_routine(local_host,local_port,remote_host,remote_port,receive_first):
         
         proxy_thread.start()
         
-
+# Dump in hex format: Display one byte unless unicode (which of course requires two)
 def hex_output(src, length=16):
     result = []
     digits = 4 if isinstance(src, unicode) else 2
@@ -51,9 +51,11 @@ def receive_from(connection):
 
 
 def request_handler(buffer):
+    # Add features to this function (someday)
     return buffer
 
 def response_handler(buffer):
+    # And here, too
     return buffer
 
 def proxy_handler(local_host,local_port,remote_host,remote_port,receive_first):
@@ -74,12 +76,12 @@ def proxy_handler(local_host,local_port,remote_host,remote_port,receive_first):
             hex_output(local_buffer)
             local_buffer = request_handler(local_buffer)
             remote_socket.send(local_buffer)
-            print ">>> Sent to remote."
+            print ">>> Sent to remote host."
             
             remote_buffer = receive_from(remote_socket)
             
             if len(remote_buffer):
-                print "<<< Received %d bytes from remote." % len(remote_socket)
+                print "<<< Received %d bytes from remote host." % len(remote_socket)
                 hex_output(remote_buffer)
                 remote_buffer = response_handler(remote_buffer)
                 client_socket.send(remote_buffer)
@@ -87,7 +89,7 @@ def proxy_handler(local_host,local_port,remote_host,remote_port,receive_first):
             if not len(local_buffer) or not len(remote_buffer):
                 client_socket.close()
                 remote_socket.close()
-                print "*** No more data. Closing connections."
+                print "*** No more data - closing connections."
                 break
             
 def main():
