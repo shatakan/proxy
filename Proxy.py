@@ -11,9 +11,9 @@ def server_routine(local_host,local_port,remote_host,remote_port,receive_first):
     try:
         server.bind((local_host,local_port))
     except:
-        print "Error. Chosen port: %s:%d is busy, or you lack administrative privileges." % (local_host, local_port)
+        print "Error: Chosen port %s:%d is busy, or you lack administrative privileges." % (local_host, local_port)
         sys.exit(0)
-    print "*** Listening on %s:%d" % (local_host,local_port)
+    print "** Listening on %s:%d" % (local_host,local_port)
     
     server.listen(5)
     while True:
